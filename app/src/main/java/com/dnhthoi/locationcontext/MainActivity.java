@@ -1,7 +1,6 @@
 package com.dnhthoi.locationcontext;
 
 import android.location.Location;
-import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -17,13 +16,15 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationListener;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks
         , GoogleApiClient.OnConnectionFailedListener
-        ,com.google.android.gms.location.LocationListener{
+        ,LocationListener{
 
     private static final String TAG = MainActivity.class.getName();
-    private TextView mLocationTextView;
+    private TextView mTxtLat;
+    private TextView mTxtLong;
     private GoogleApiClient mGooogleApiClient;
     private LocationRequest mLocationRequest;
     @Override
@@ -42,12 +43,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             }
         });
 
-        mGooogleApiClient = new GoogleApiClient.Builder(this).
-                addApi(LocationServices.API)
+        mGooogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this).build();
+                .addOnConnectionFailedListener(this)
+                .build();
 
-        mLocationTextView = (TextView) findViewById(R.id.locationText);
+        mLocationRequest = LocationRequest.create();
+
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setInterval(1000);
+
+        mTxtLat = (TextView) findViewById(R.id.txtLat);
+        mTxtLong = (TextView) findViewById(R.id.txtLong);
     }
 
     @Override
@@ -60,13 +68,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onStart(){
         super.onStart();
-        if(!mGooogleApiClient.isConnected())
+        //if(!mGooogleApiClient.isConnected())
             mGooogleApiClient.connect();
+        Log.e(TAG,"google client is connected");
     }
     @Override
     public void onPause(){
      super.onPause();
-        if( mGooogleApiClient.isConnected())
+        //if( mGooogleApiClient.isConnected())
             mGooogleApiClient.disconnect();
     }
     @Override
@@ -86,31 +95,31 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onConnected(Bundle bundle) {
-        mLocationRequest = LocationRequest.create();
 
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(1000);
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGooogleApiClient, mLocationRequest, this);
 
-        LocationServices.FusedLocationApi
-                .requestLocationUpdates(mGooogleApiClient, mLocationRequest , this);
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        Log.e(TAG, "connection suspended");
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-
+        Log.e(TAG, "connection failed");
     }
 
     @Override
     public void onLocationChanged(Location location) {
+
         Log.e(TAG, "onLocationChange()");
 
-        mLocationTextView.setText(
-                String.valueOf(location.getLatitude())+":"+String.valueOf(location.getLongitude()));
+        mTxtLat.setText("Lat::" +
+                String.valueOf(location.getLatitude()));
+
+        mTxtLong.setText("Long::" +
+                String.valueOf(location.getLongitude()));
     }
 
 }
