@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -68,14 +69,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onStart(){
         super.onStart();
-        //if(!mGooogleApiClient.isConnected())
+        if(!mGooogleApiClient.isConnected())
             mGooogleApiClient.connect();
         Log.e(TAG,"google client is connected");
     }
     @Override
     public void onPause(){
      super.onPause();
-        //if( mGooogleApiClient.isConnected())
+        if( mGooogleApiClient.isConnected())
             mGooogleApiClient.disconnect();
     }
     @Override
@@ -95,8 +96,22 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onConnected(Bundle bundle) {
+        Location location = LocationServices.FusedLocationApi.getLastLocation(mGooogleApiClient);
+        if(location == null) {
+            mLocationRequest = LocationRequest.create();
+            mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            mLocationRequest.setInterval(1000);
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGooogleApiClient, mLocationRequest, this);
+        }
+        else {
+            mTxtLat.setText("Lat::" +
+                    String.valueOf(location.getLatitude()));
 
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGooogleApiClient, mLocationRequest, this);
+            mTxtLong.setText("Long::" +
+                    String.valueOf(location.getLongitude()));
+
+            Toast.makeText(this,"last location",Toast.LENGTH_LONG).show();
+        }
 
     }
 
