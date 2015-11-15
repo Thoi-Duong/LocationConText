@@ -24,8 +24,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         ,LocationListener{
 
     private static final String TAG = MainActivity.class.getName();
-    private TextView mTxtLat;
-    private TextView mTxtLong;
+    private TextView mTxtAcitivity;
     private GoogleApiClient mGooogleApiClient;
     private LocationRequest mLocationRequest;
     @Override
@@ -55,8 +54,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         mLocationRequest.setInterval(1000);
 
-        mTxtLat = (TextView) findViewById(R.id.txtLat);
-        mTxtLong = (TextView) findViewById(R.id.txtLong);
+        mTxtAcitivity = (TextView) findViewById(R.id.txtActivity);
+
     }
 
     @Override
@@ -104,11 +103,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             LocationServices.FusedLocationApi.requestLocationUpdates(mGooogleApiClient, mLocationRequest, this);
         }
         else {
-            mTxtLat.setText("Lat::" +
-                    String.valueOf(location.getLatitude()));
-
-            mTxtLong.setText("Long::" +
-                    String.valueOf(location.getLongitude()));
 
             Toast.makeText(this,"last location",Toast.LENGTH_LONG).show();
         }
@@ -130,11 +124,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         Log.e(TAG, "onLocationChange()");
 
-        mTxtLat.setText("Lat::" +
-                String.valueOf(location.getLatitude()));
 
-        mTxtLong.setText("Long::" +
-                String.valueOf(location.getLongitude()));
     }
 
 }

@@ -10,23 +10,18 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:text="You're here "
-        android:id="@+id/txtLat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <TextView
-        android:text="You're here "
-        android:id="@+id/txtLong"
+        android:text="@string/detected_activities_title"
+        android:id="@+id/txtActivity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/btnUpdateActivity"
-        android:text="Update"/>
+        android:text="@string/request_activity_updates"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/btnRemoveActivity"
-        android:text="Remove"/>
+        android:text="@string/remove_activity_updates"/>
 </LinearLayout>
