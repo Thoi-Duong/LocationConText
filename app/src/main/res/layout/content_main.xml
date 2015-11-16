@@ -8,22 +8,34 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_main"
     tools:context=".MainActivity">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:text="@string/detected_activities_title"
+            android:id="@+id/txtActivity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnRequestActivity"
+            android:text="@string/request_activity_updates"
+            />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnRemoveActivity"
+            android:text="@string/remove_activity_updates"
+            />
+    </LinearLayout>
 
-    <TextView
-        android:text="@string/detected_activities_title"
-        android:id="@+id/txtActivity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <Button
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btnRequestActivity"
-        android:text="@string/request_activity_updates"
-        />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/btnRemoveActivity"
-        android:text="@string/remove_activity_updates"
-        />
+        android:id="@+id/map"
+        tools:context=".MainActivity"
+        android:name="com.google.android.gms.maps.SupportMapFragment" />
 </LinearLayout>

@@ -30,11 +30,19 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks
         , GoogleApiClient.OnConnectionFailedListener
-        ,LocationListener, ResultCallback< Status> {
+        ,LocationListener, ResultCallback< Status>,OnMapReadyCallback {
 
 
     private static final String TAG = MainActivity.class.getName();
@@ -43,6 +51,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private LocationRequest mLocationRequest;
     private Button mbtnRequest;
     private Button mbtnRemove;
+    private GoogleMap mMapl;
+    private Marker mCurrentMarker;
     protected ActivityDetectioBroadcastReciever mActivityBroadcastReciever;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +71,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         });
 
         BuildGooogleApiClient();
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
         mActivityBroadcastReciever = new ActivityDetectioBroadcastReciever();
 
         mLocationRequest = LocationRequest.create();
@@ -176,6 +190,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if (id == R.id.action_settings) {
             return true;
         }
+        if (id == R.id.normalMap){
+            mMapl.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+            return true;
+        }
+        if(id == R.id.hybird){
+            mMapl.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+            return true;
+        }
+        if(id == R.id.statellite){
+            mMapl.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -183,6 +209,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onConnected(Bundle bundle) {
 
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
 
     }
 
@@ -199,7 +226,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onLocationChanged(Location location) {
 
+        mMapl.clear();
         Log.e(TAG, "onLocationChange()");
+        if( mCurrentMarker != null)
+            mCurrentMarker.remove();
+        LatLng current = new LatLng(location.getLatitude(),location.getLongitude());
+
+       mCurrentMarker = mMapl.addMarker(new MarkerOptions().position(current).title("i'm here"));
+        // Showing the current location in Google Map
+        mMapl.moveCamera(CameraUpdateFactory.newLatLng(current));
+
+        // Zoom in the Google Map
+        mMapl.animateCamera(CameraUpdateFactory.zoomTo(18));
 
     }
 
@@ -225,6 +263,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             default:
                 return resources.getString(R.string.unidentifiable_activity, detectedActivityType);
         }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMapl = googleMap;
+
     }
 
     public class ActivityDetectioBroadcastReciever extends BroadcastReceiver {
