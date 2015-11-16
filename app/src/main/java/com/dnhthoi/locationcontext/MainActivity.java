@@ -234,10 +234,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
        mCurrentMarker = mMapl.addMarker(new MarkerOptions().position(current).title("i'm here"));
         // Showing the current location in Google Map
-        mMapl.moveCamera(CameraUpdateFactory.newLatLng(current));
+        //mMapl.moveCamera(CameraUpdateFactory.newLatLng(current));
 
         // Zoom in the Google Map
-        mMapl.animateCamera(CameraUpdateFactory.zoomTo(18));
+        //mMapl.animateCamera(CameraUpdateFactory.zoomTo(18));
 
     }
 
@@ -268,7 +268,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMapl = googleMap;
+        if(mCurrentMarker != null)
+            mCurrentMarker.remove();
+        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        LatLng current;
+        if(location != null)
+             current = new LatLng(location.getLatitude(),location.getLongitude());
+        else
+            current = new LatLng(10.795868943365294, 106.6611018973327);
 
+        mCurrentMarker = mMapl.addMarker(new MarkerOptions().position(current).title("i'm here"));
+        // Showing the current location in Google Map
+        mMapl.moveCamera(CameraUpdateFactory.newLatLng(current));
+
+        // Zoom in the Google Map
+        mMapl.animateCamera(CameraUpdateFactory.zoomTo(18));
     }
 
     public class ActivityDetectioBroadcastReciever extends BroadcastReceiver {
