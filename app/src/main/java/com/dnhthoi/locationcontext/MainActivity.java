@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -37,6 +38,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
 
@@ -54,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private GoogleMap mMapl;
     private Marker mCurrentMarker;
     protected ActivityDetectioBroadcastReciever mActivityBroadcastReciever;
+    private SupportMapFragment mapFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,9 +75,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         BuildGooogleApiClient();
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+
         mActivityBroadcastReciever = new ActivityDetectioBroadcastReciever();
 
         mLocationRequest = LocationRequest.create();
@@ -188,6 +191,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            if(mGoogleApiClient.isConnected()){
+                Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+                LatLng current;
+                current = new LatLng(location.getLatitude(),location.getLongitude());
+
+                mCurrentMarker = mMapl.addMarker(new MarkerOptions().position(current).title("i'm here"));
+                // Showing the current location in Google Map
+                mMapl.moveCamera(CameraUpdateFactory.newLatLng(current));
+
+                // Zoom in the Google Map
+                mMapl.animateCamera(CameraUpdateFactory.zoomTo(18));
+            }
             return true;
         }
         if (id == R.id.normalMap){
@@ -210,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onConnected(Bundle bundle) {
 
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        mapFragment.getMapAsync(this);
 
     }
 
@@ -231,6 +247,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if( mCurrentMarker != null)
             mCurrentMarker.remove();
         LatLng current = new LatLng(location.getLatitude(),location.getLongitude());
+        Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if(lastLocation != null){
+            LatLng last = new LatLng(lastLocation.getLatitude(),lastLocation.getLongitude());
+
+            mMapl.addPolyline(new PolylineOptions().add(current,last).color(Color.RED).width(5));
+        }
+
 
        mCurrentMarker = mMapl.addMarker(new MarkerOptions().position(current).title("i'm here"));
         // Showing the current location in Google Map
@@ -272,10 +295,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             mCurrentMarker.remove();
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         LatLng current;
-        if(location != null)
-             current = new LatLng(location.getLatitude(),location.getLongitude());
-        else
+        if(location != null) {
+            current = new LatLng(location.getLatitude(), location.getLongitude());
+
+        }
+        else {
             current = new LatLng(10.795868943365294, 106.6611018973327);
+        }
 
         mCurrentMarker = mMapl.addMarker(new MarkerOptions().position(current).title("i'm here"));
         // Showing the current location in Google Map

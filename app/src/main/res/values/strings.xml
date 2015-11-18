@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">LocationContext</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Refesh</string>
     <string name="google_maps_key">AIzaSyBgAsqrKkVo5KJPcz_uyu9RYa2gGfc3apI</string>>
     <string name="detected_activities_title">Detected Activities</string>
 
